@@ -17,6 +17,8 @@ namespace NetSwiftClient.Demo.AspNetCore
         public string Domain { get; set; }
         public bool SaveDomain { get; set; }
 
+        public string Password { get; set; }
+
         public string Token { get; set; }
         public DateTime ExpirationTime { get; set; }
 

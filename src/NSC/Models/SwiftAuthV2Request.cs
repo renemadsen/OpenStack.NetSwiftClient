@@ -4,74 +4,62 @@ using System.Text;
 
 namespace NetSwiftClient.Models
 {
-    public class SwiftAuthV3Request
+    public class SwiftAuthV2Request
     {
-        public SwiftAuthV3Request(string name, string password, string domain = "Default", IScopeDescriptorObject scope = null)
+        public SwiftAuthV2Request(string name, string password, IScopeDescriptorObject scope = null)
         {
             Auth = new AuthObject()
             {
-                Identity = new IdentityObject()
+                PasswordCredentials = new UserObject()
                 {
-                    Methods = new List<string>() { "password" },
-                    Password = new PasswordObject()
-                    {
-                        User = new UserObject()
-                        {
-                            Name = name,
-                            Password = password,
-                            //Domain = new DomainObject() { Name = domain }
-                        }
-                    }
+                    Username = name,
+                    Password = password,
                 },
                 Scope = new ScopeObject(scope)
             };
         }
 
-        public SwiftAuthV3Request(string name, string password, string domain = "Default")
-        {
-            Auth = new AuthObject()
-            {
-                Identity = new IdentityObject()
-                {
-                    Methods = new List<string>() { "password" },
-                    Password = new PasswordObject()
-                    {
-                        User = new UserObject()
-                        {
-                            Name = name,
-                            Password = password,
-                            //Domain = new DomainObject() { Name = domain }
-                        }
-                    }
-                }
-            };
-        }
+        //public SwiftAuthV2Request(string name, string password)
+        //{
+        //    Auth = new AuthObject()
+        //    {
+        //        PasswordCredentials = new IdentityObject()
+        //        {
+        //            Password = new PasswordObject()
+        //            {
+        //                User = new UserObject()
+        //                {
+        //                    Username = name,
+        //                    Password = password,
+        //                }
+        //            }
+        //        }
+        //    };
+        //}
 
-        public SwiftAuthV3Request(string token)
-        {
-            Auth = new AuthObject()
-            {
-                Identity = new IdentityObject()
-                {
-                    Methods = new List<string>() { "token" },
-                    Token = new TokenObject()
-                    {
-                        Id = token
-                    }
-                }
-            };
-        }
+        //public SwiftAuthV2Request(string token)
+        //{
+        //    Auth = new AuthObject()
+        //    {
+        //        PasswordCredentials = new IdentityObject()
+        //        {
+        //            Token = new TokenObject()
+        //            {
+        //                Id = token
+        //            }
+        //        }
+        //    };
+        //}
 
         public AuthObject Auth { get; set; }
 
         public class AuthObject
         {
-            public IdentityObject Identity { get; set; }
+            public UserObject PasswordCredentials { get; set; }
             public ScopeObject Scope { get; set; }
         }
         public class IdentityObject
         {
-            public List<string> Methods { get; set; } = new List<string>();
             public PasswordObject Password { get; set; }
             public TokenObject Token { get; set; }
         }
@@ -85,7 +73,7 @@ namespace NetSwiftClient.Models
         }
         public class UserObject
         {
-            public string Name { get; set; }
+            public string Username { get; set; }
             public string Password { get; set; }
             public DomainObject Domain { get; set; }
 

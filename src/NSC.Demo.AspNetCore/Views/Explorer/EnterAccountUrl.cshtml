@@ -1,4 +1,4 @@
-﻿@model SwiftAuthV3Response
+﻿@model SwiftAuthV2Response
 @{
     ViewData["Title"] = "Enter account url";
     Texts["Explore.AccountUrl.PH"] = "Account URL";
@@ -16,7 +16,7 @@
 <br />
 @T("Explore.OrSelectAccount")
 <form method="get">
-    @{
+    @*@{
         var c = Model?.ContentObject?.Token?.Catalog;
         var dico = new Dictionary<string, List<SwiftAuthV3Response.EndpointObject>>();
         foreach (var itm in c??new List<SwiftAuthV3Response.CatalogItem>())
@@ -27,8 +27,8 @@
     }
     <script>
         var catalogItems = @Json.Serialize(dico);
-    </script>
-    <select id="endpointCatalog">
+    </script>*@
+    @*<select id="endpointCatalog">
 
         @foreach (var catalogItem in Model?.ContentObject?.Token?.Catalog ?? new List<SwiftAuthV3Response.CatalogItem>())
         {
@@ -50,10 +50,10 @@
                 <option value="@e.Url">@e.Region @e.Interface @e.Url</option>
             }
         }
-    </select>
+    </select>*@
     <button class="btn btn-success"><i class="fa fa-chevron-right"></i></button>
 </form>
-<script>
+@*<script>
     $('#endpointCatalog').change(function () {
         var endPointId = $(this).val();
         var select = $('#endpoint');
@@ -66,7 +66,7 @@
             select.append(opt)
         })
     })
-</script>
+</script>*@
 
 @*<pre>
 @Newtonsoft.Json.JsonConvert.SerializeObject(Newtonsoft.Json.JsonConvert.DeserializeObject( Model.ContentStr), Newtonsoft.Json.Formatting.Indented)

@@ -16,23 +16,110 @@ namespace NetSwiftClient
         private readonly HttpClient _Client = new HttpClient();
         private string _Token;
         private string Token { get => DateTime.UtcNow < TokenExpiresAt ? _Token : null; set => _Token = value; }
+        public string UserName = "";
+        public string Password = "";
         private DateTime TokenExpiresAt { get; set; }
 
         #region Identity/Authentication
         public Task<SwiftAuthV3Response> AuthenticateAsync(string authUrl, string name, string password, string domain = "Default")
         {
             var reqObj = new SwiftAuthV3Request(name, password, domain);
-            return AuthenticateAsync(authUrl, reqObj);
+            return AuthenticateAsync(authUrl, reqObj);            
         }
+
         public Task<SwiftAuthV3Response> AuthenticateTokenAsync(string authUrl, string token)
         {
             var reqObj = new SwiftAuthV3Request(token);
             return AuthenticateAsync(authUrl, reqObj);
         }
 
+        #region V2.0
+
+        public Task<SwiftAuthV2Response> AuthenticateAsyncV2(string authUrl, string name, string password)
+        {
+            var reqObj = new SwiftAuthV2Request(name, password);
+            UserName = name;
+            Password = password;
+            return AuthenticateAsyncV2(authUrl, reqObj);
+
+        }
+
+        //public Task<SwiftAuthV2Response> AuthenticateTokenAsyncV2(string authUrl, string token)
+        //{
+        //    var reqObj = new SwiftAuthV2Request(token);
+        //    return AuthenticateAsyncV2(authUrl, reqObj);
+        //}
+
+        public async Task<SwiftAuthV2Response> AuthenticateAsyncV2(string authUrl, SwiftAuthV2Request reqObj)
+        {
+            var tokenUrl = $"{authUrl}/tokens";
+
+            var contentStr = JsonConvert.SerializeObject(reqObj, new JsonSerializerSettings()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            });
+            var content = new StringContent(contentStr);
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            try
+            {
+                var resp = await _Client.PostAsync(tokenUrl, content);
+                if (resp.IsSuccessStatusCode)
+                {
+                    var respTxt = await resp.Content.ReadAsStringAsync();
+
+                    var result = new SwiftAuthV2Response()
+                    {
+                        ContentLength = resp.Content?.Headers?.ContentLength ?? 0,
+                        IsSuccess = resp.IsSuccessStatusCode,
+                        Headers = resp.Headers.ToDictionary(),
+                        Reason = resp.ReasonPhrase,
+                        StatusCode = resp.StatusCode,
+                        ContentObject = JsonConvert.DeserializeObject<SwiftAuthV2Response.TokenContainerObject>(respTxt),
+                        ContentStr = respTxt
+                    };
+                    InitToken(result.ContentObject.Access.Token.Id, result.TokenExpires);
+                    UserName = reqObj.Auth.PasswordCredentials.Username;
+                    Password = reqObj.Auth.PasswordCredentials.Password;
+                    return result;
+                }
+
+                var length = resp.Content?.Headers?.ContentLength ?? 0;
+                var respTxt2 = length > 0 ? await resp.Content.ReadAsStringAsync() : null;
+                return new SwiftAuthV2Response()
+                {
+                    ContentLength = length,
+                    IsSuccess = resp.IsSuccessStatusCode,
+                    Headers = resp.Headers.ToDictionary(),
+                    Reason = resp.ReasonPhrase,
+                    StatusCode = resp.StatusCode,
+                    ContentStr = respTxt2
+                };
+            }
+            catch (Exception exc)
+            {
+                return new SwiftAuthV2Response()
+                {
+                    ContentLength = 0,
+                    IsSuccess = false,
+                    Headers = new Dictionary<string, string>(),
+                    Reason = "Internal error " + exc.Message,
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                };
+            }
+        }
+
+
+        #endregion
+
         public async Task<SwiftAuthV3Response> AuthenticateAsync(string authUrl, SwiftAuthV3Request reqObj)
         {
             var tokenUrl = $"{authUrl}/auth/tokens";
+            if (authUrl.Contains("2.0"))
+            {
+                tokenUrl = $"{authUrl}/tokens";
+            }
+            
             var contentStr = JsonConvert.SerializeObject(reqObj, new JsonSerializerSettings()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -57,6 +144,7 @@ namespace NetSwiftClient
                         ContentObject = JsonConvert.DeserializeObject<SwiftAuthV3Response.TokenContainerObject>(respTxt),
                         ContentStr = respTxt
                     };
+
                     InitToken(result.Token, result.TokenExpires);
                     return result;
                 }
@@ -469,6 +557,11 @@ namespace NetSwiftClient
         {
             HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, url);
             req.FillTokenHeader(Token);
+
+            req.Headers.Add("X-Auth-User", UserName);
+            req.Headers.Add("X-Auth-Key", Password);
+
+
             try
             {
                 var resp = await _Client.SendAsync(req);

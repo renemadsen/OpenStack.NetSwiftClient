@@ -39,30 +39,63 @@ namespace NetSwiftClient.Demo.AspNetCore.Controllers
                 return JsonResult(response);
             }
 
-            var authRes = await _SwiftService.AuthenticateAsync(model.AuthAPIV3EndPoint, model.AuthName, model.Password, model.Domain);
-            if (!GenericCheck(() => authRes.IsSuccess, response, (int)authRes.StatusCode, SiteErrorCodes.InvalidCredentials))
+            if (model.AuthAPIV3EndPoint.Contains("2.0"))
             {
-                response.Error += "\n" + authRes.Reason;
-                return JsonResult(response);
+                var authRes = await _SwiftService.AuthenticateAsyncV2(model.AuthAPIV3EndPoint, model.AuthName, model.Password);
+                if (!GenericCheck(() => authRes.IsSuccess, response, (int)authRes.StatusCode, SiteErrorCodes.InvalidCredentials))
+                {
+                    response.Error += "\n" + authRes.Reason;
+                    return JsonResult(response);
+                }
+
+                // store token
+                _TokenService.Token = new OpenStackAuthCookie()
+                {
+                    AuthAPIV3EndPoint = model.SaveAuthEndpoint ? model.AuthAPIV3EndPoint : null,
+                    Name = model.SaveName ? model.AuthName : null,
+                    Domain = model.SaveDomain ? model.Domain : null,
+                    ExpirationTime = authRes.TokenExpires ?? DateTime.MaxValue,
+                    Token = authRes.ContentObject.Access.Token.Id,
+                    SaveAuthEndPoint = model.SaveAuthEndpoint,
+                    SaveName = model.SaveName,
+                    SaveDomain = model.SaveDomain,
+                    Password = model.Password
+                };
+
+                response.Result.AuthResponse = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(authRes.ContentStr), Formatting.Indented);
+                response.Success = true;
+                //response.Result.RedirectLink = Url.RouteUrl(Routes.GET_Explore_Route);
+                return JsonResult(StatusCodes.Status200OK, response);
+            } else
+            {
+                var authRes = await _SwiftService.AuthenticateAsync(model.AuthAPIV3EndPoint, model.AuthName, model.Password, model.Domain);
+                if (!GenericCheck(() => authRes.IsSuccess, response, (int)authRes.StatusCode, SiteErrorCodes.InvalidCredentials))
+                {
+                    response.Error += "\n" + authRes.Reason;
+                    return JsonResult(response);
+                }
+
+                // store token
+                _TokenService.Token = new OpenStackAuthCookie()
+                {
+                    AuthAPIV3EndPoint = model.SaveAuthEndpoint ? model.AuthAPIV3EndPoint : null,
+                    Name = model.SaveName ? model.AuthName : null,
+                    Domain = model.SaveDomain ? model.Domain : null,
+                    ExpirationTime = authRes.TokenExpires ?? DateTime.MaxValue,
+                    Token = authRes.Token,
+                    SaveAuthEndPoint = model.SaveAuthEndpoint,
+                    SaveName = model.SaveName,
+                    SaveDomain = model.SaveDomain,
+                    Password = model.Password
+                };
+
+                response.Result.AuthResponse = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(authRes.ContentStr), Formatting.Indented);
+                response.Success = true;
+                //response.Result.RedirectLink = Url.RouteUrl(Routes.GET_Explore_Route);
+                return JsonResult(StatusCodes.Status200OK, response);
             }
-
-            // store token
-            _TokenService.Token = new OpenStackAuthCookie()
-            {
-                AuthAPIV3EndPoint = model.SaveAuthEndpoint ? model.AuthAPIV3EndPoint : null,
-                Name = model.SaveName ? model.AuthName : null,
-                Domain = model.SaveDomain ? model.Domain : null,
-                ExpirationTime = authRes.TokenExpires ?? DateTime.MaxValue,
-                Token = authRes.Token,
-                SaveAuthEndPoint = model.SaveAuthEndpoint,
-                SaveName = model.SaveName,
-                SaveDomain = model.SaveDomain,
-            };
-
-            response.Result.AuthResponse = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(authRes.ContentStr), Formatting.Indented);
-            response.Success = true;
-            //response.Result.RedirectLink = Url.RouteUrl(Routes.GET_Explore_Route);
-            return JsonResult(StatusCodes.Status200OK, response);
+            
+            
 
         }
 

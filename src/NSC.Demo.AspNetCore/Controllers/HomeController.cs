@@ -33,9 +33,19 @@ namespace NetSwiftClient.Demo.AspNetCore.Controllers
             if (!_TokenService.HasToken) return View("/Views/Home/Index.cshtml");
             if (accountUrl.IsNullOrEmpty())
             {
-                var authRes = await _SwiftService.AuthenticateTokenAsync(_TokenService.Token.AuthAPIV3EndPoint, _TokenService.Token.Token);
-                return View("/Views/Explorer/EnterAccountUrl.cshtml", authRes);
+                if (_TokenService.Token.AuthAPIV3EndPoint.Contains("2.0"))
+                {
+                    var authRes = await _SwiftService.AuthenticateAsyncV2(_TokenService.Token.AuthAPIV3EndPoint, _TokenService.Token.Name, _TokenService.Token.Password);
+                    return View("/Views/Explorer/EnterAccountUrl.cshtml", authRes);
+                } else
+                {
+                    var authRes = await _SwiftService.AuthenticateTokenAsync(_TokenService.Token.AuthAPIV3EndPoint, _TokenService.Token.Token);
+                    return View("/Views/Explorer/EnterAccountUrl.cshtml", authRes);
+                }
+                
             }
+            _SwiftService.UserName = _TokenService.Token.Name;
+            _SwiftService.Password = _TokenService.Token.Password;
             _SwiftService.InitToken(_TokenService.Token.Token);
             if (container.IsNullOrEmpty())
             {
