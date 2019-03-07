@@ -16,8 +16,8 @@ namespace NetSwiftClient
         private readonly HttpClient _Client = new HttpClient();
         private string _Token;
         private string Token { get => DateTime.UtcNow < TokenExpiresAt ? _Token : null; set => _Token = value; }
-        public string UserName = "";
-        public string Password = "";
+        //public string UserName = "";
+        //public string Password = "";
         private DateTime TokenExpiresAt { get; set; }
 
         #region Identity/Authentication
@@ -38,8 +38,8 @@ namespace NetSwiftClient
         public Task<SwiftAuthV2Response> AuthenticateAsyncV2(string authUrl, string name, string password)
         {
             var reqObj = new SwiftAuthV2Request(name, password);
-            UserName = name;
-            Password = password;
+            //UserName = name;
+            //Password = password;
             return AuthenticateAsyncV2(authUrl, reqObj);
 
         }
@@ -79,8 +79,8 @@ namespace NetSwiftClient
                         ContentStr = respTxt
                     };
                     InitToken(result.ContentObject.Access.Token.Id, result.TokenExpires);
-                    UserName = reqObj.Auth.PasswordCredentials.Username;
-                    Password = reqObj.Auth.PasswordCredentials.Password;
+                    //UserName = reqObj.Auth.PasswordCredentials.Username;
+                    //Password = reqObj.Auth.PasswordCredentials.Password;
                     return result;
                 }
 
@@ -558,8 +558,8 @@ namespace NetSwiftClient
             HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, url);
             req.FillTokenHeader(Token);
 
-            req.Headers.Add("X-Auth-User", UserName);
-            req.Headers.Add("X-Auth-Key", Password);
+            //req.Headers.Add("X-Auth-User", UserName);
+            //req.Headers.Add("X-Auth-Key", Password);
 
 
             try

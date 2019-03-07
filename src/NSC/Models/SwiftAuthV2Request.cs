@@ -15,7 +15,7 @@ namespace NetSwiftClient.Models
                     Username = name,
                     Password = password,
                 },
-                Scope = new ScopeObject(scope)
+                TenantName = name
             };
         }
 
@@ -56,7 +56,8 @@ namespace NetSwiftClient.Models
         public class AuthObject
         {
             public UserObject PasswordCredentials { get; set; }
-            public ScopeObject Scope { get; set; }
+            public string TenantName { get; set; }
+            //public ScopeObject Scope { get; set; }
         }
         public class IdentityObject
         {

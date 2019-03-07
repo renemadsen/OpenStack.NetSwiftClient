@@ -44,8 +44,8 @@ namespace NetSwiftClient.Demo.AspNetCore.Controllers
                 }
                 
             }
-            _SwiftService.UserName = _TokenService.Token.Name;
-            _SwiftService.Password = _TokenService.Token.Password;
+            //_SwiftService.UserName = _TokenService.Token.Name;
+            //_SwiftService.Password = _TokenService.Token.Password;
             _SwiftService.InitToken(_TokenService.Token.Token);
             if (container.IsNullOrEmpty())
             {
