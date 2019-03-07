@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetSwiftClient.Demo.AspNetCore.Models;
-using NetSwiftClient.Models;
-using Newtonsoft.Json;
+using OpenStack.NetCoreSwiftClient;
+using OpenStack.NetCoreSwiftClient.Extensions;
+using OpenStack.NetCoreSwiftClient.Infrastructure.Models;
 
 namespace NetSwiftClient.Demo.AspNetCore.Controllers
 {
@@ -33,15 +30,15 @@ namespace NetSwiftClient.Demo.AspNetCore.Controllers
             if (!_TokenService.HasToken) return View("/Views/Home/Index.cshtml");
             if (accountUrl.IsNullOrEmpty())
             {
-                if (_TokenService.Token.AuthAPIV3EndPoint.Contains("2.0"))
-                {
+                //if (_TokenService.Token.AuthAPIV3EndPoint.Contains("2.0"))
+                //{
                     var authRes = await _SwiftService.AuthenticateAsyncV2(_TokenService.Token.AuthAPIV3EndPoint, _TokenService.Token.Name, _TokenService.Token.Password);
                     return View("/Views/Explorer/EnterAccountUrl.cshtml", authRes);
-                } else
-                {
-                    var authRes = await _SwiftService.AuthenticateTokenAsync(_TokenService.Token.AuthAPIV3EndPoint, _TokenService.Token.Token);
-                    return View("/Views/Explorer/EnterAccountUrl.cshtml", authRes);
-                }
+                //} else
+                //{
+                //    var authRes = await _SwiftService.AuthenticateTokenAsyncV2(_TokenService.Token.AuthAPIV3EndPoint, _TokenService.Token.Token);
+                //    return View("/Views/Explorer/EnterAccountUrl.cshtml", authRes);
+                //}
                 
             }
             //_SwiftService.UserName = _TokenService.Token.Name;
@@ -93,7 +90,7 @@ namespace NetSwiftClient.Demo.AspNetCore.Controllers
             return JsonResult(StatusCodes.Status200OK, response);
         }
 
-        public class ContainerAdd_PUTModel: NetSwiftClient.Models.SwiftContainerPutParameters
+        public class ContainerAdd_PUTModel: OpenStack.NetCoreSwiftClient.Infrastructure.Models.SwiftContainerPutParameters
         {
             public string Container { get; set; }
         }

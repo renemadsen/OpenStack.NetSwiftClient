@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenStack.NetCoreSwiftClient;
+using OpenStack.NetCoreSwiftClient.Extensions;
 
 namespace NetSwiftClient.Demo.AspNetCore
 {

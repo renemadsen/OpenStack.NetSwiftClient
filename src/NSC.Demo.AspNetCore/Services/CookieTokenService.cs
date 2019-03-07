@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using OpenStack.NetCoreSwiftClient.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

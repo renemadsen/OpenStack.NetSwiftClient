@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.DataProtection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using OpenStack.NetCoreSwiftClient.Extensions;
 
 namespace NetSwiftClient.Demo.AspNetCore.Controllers
 {
