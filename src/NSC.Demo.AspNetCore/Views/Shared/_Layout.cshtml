@@ -1,21 +1,21 @@
 ﻿@{
-    Texts["Auth.Authenticate"] = "Authenticate";
-    Texts["Auth.Authenticated"] = "Authenticated";
-    Texts["Auth.AuthenticatedWith"] = "Authenticated with {0}";
-    Texts["Auth.NotAuthenticated"] = "Not Authenticated";
-
-    Texts["Auth.Endpoint.PH"] = "Authentication V3 Endpoint";
-    Texts["Auth.SaveEndpoint.PH"] = "Save endpoint";
-    Texts["Auth.Name.PH"] = "Name";
-    Texts["Auth.SaveName.PH"] = "Save name";
-    Texts["Auth.Password.PH"] = "Password";
-    Texts["Auth.Domain.PH"] = "Domain";
-    Texts["Auth.SaveDomain.PH"] = "Save domain";
-    Texts["Auth.Authenticate"] = "Authenticate";
-    Texts["Auth.Success"] = "Authentication Successful";
-    Texts["Auth.GoExplore"] = "Go to explorer";
-
-    var token = TokenService.HasToken ? TokenService.Token : null;
+//    Texts["Auth.Authenticate"] = "Authenticate";
+//    Texts["Auth.Authenticated"] = "Authenticated";
+//    Texts["Auth.AuthenticatedWith"] = "Authenticated with {0}";
+//    Texts["Auth.NotAuthenticated"] = "Not Authenticated";
+//
+//    Texts["Auth.Endpoint.PH"] = "Authentication V3 Endpoint";
+//    Texts["Auth.SaveEndpoint.PH"] = "Save endpoint";
+//    Texts["Auth.Name.PH"] = "Name";
+//    Texts["Auth.SaveName.PH"] = "Save name";
+//    Texts["Auth.Password.PH"] = "Password";
+//    Texts["Auth.Domain.PH"] = "Domain";
+//    Texts["Auth.SaveDomain.PH"] = "Save domain";
+//    Texts["Auth.Authenticate"] = "Authenticate";
+//    Texts["Auth.Success"] = "Authentication Successful";
+//    Texts["Auth.GoExplore"] = "Go to explorer";
+//
+//    var token = TokenService.HasToken ? TokenService.Token : null;
     var authRoute = Url.RouteUrl(Routes.POST_Authenticate_Route);
     var homeRoute = Url.RouteUrl(Routes.GET_Home_Route);
     var exploreUrl = Url.RouteUrl(Routes.GET_Explore_Route);
@@ -78,43 +78,49 @@
     <partial name="_CookieConsentPartial" />
 
     <div class="container body-content">
-        @if (TokenService.HasToken)
-        {
-            <div class="alert alert-auth alert-info">
-                <span>@((TokenService.Token.Name.IsNullOrEmpty() ? T("Auth.Authenticated") : T("Auth.AuthenticatedWith", TokenService.Token.Name)))</span>
-                <button style="align-self:flex-end" class="btn btn-link btn-sm" data-toggle="collapse" data-target="#collapse-auth" aria-expanded="true" aria-controls="collapse-auth">
-                    <i class="fa fa-chevron-down"></i>
-                </button>
-            </div>
-        }
-        else
-        {
+@*         @if (TokenService.HasToken) *@
+@*         { *@
+             <div class="alert alert-auth alert-info">
+                 @* <span>@((TokenService.Token.Name.IsNullOrEmpty() ? T("Auth.Authenticated") : T("Auth.AuthenticatedWith", TokenService.Token.Name)))</span> *@
+                 <button style="align-self:flex-end" class="btn btn-link btn-sm" data-toggle="collapse" data-target="#collapse-auth" aria-expanded="true" aria-controls="collapse-auth">
+                     <i class="fa fa-chevron-down"></i>
+                 </button>
+             </div>
+@*         } *@
+@*         else *@
+@*         { *@
             <div class="alert alert-auth alert-danger">
-                <span>@T("Auth.NotAuthenticated") </span>
+                <span>Auth.NotAuthenticated</span>
                 <button style="align-self:flex-end" class="btn btn-link" data-toggle="collapse" data-target="#collapse-auth" aria-expanded="true" aria-controls="collapse-auth">
-                    @T("Auth.Authenticate")
+                    Auth.Authenticate
                 </button>
             </div>
-        }
-        <div id="auth-body" class="@((TokenService.HasToken?"":"not-auth"))">
-            <div id="collapse-auth" class="collapse @((TokenService.HasToken?"":"show"))" data-parent="#auth-body">
+        @* } *@
+        <div id="auth-body" >
+            <div id="collapse-auth" class="collapse show" data-parent="#auth-body">
                 <div class="card-body">
                     <form data-url="@authRoute" method="post">
                         @{
-                            var endpointModel = TextModel.FromNameLabel(nameof(Authenticate_POSTModel.AuthAPIV3EndPoint), T("Auth.Endpoint.PH"),
-                                value: token?.AuthAPIV3EndPoint);
-                            var nameModel = TextModel.FromNameLabel(nameof(Authenticate_POSTModel.AuthName), T("Auth.Name.PH"),
-                                value: token?.Name);
-                            var passwordModel = TextModel.FromNameLabel(nameof(Authenticate_POSTModel.Password), T("Auth.Password.PH"));
+                            var endpointModel = TextModel.FromNameLabel(nameof(Authenticate_POSTModel.AuthAPIV3EndPoint), "Auth.Endpoint.PH",
+                                value: "");
+                                //value: token?.AuthAPIV3EndPoint);
+                            var nameModel = TextModel.FromNameLabel(nameof(Authenticate_POSTModel.AuthName), "Auth.Name.PH",
+                                value: "");
+                                //value: token?.Name);
+                            var passwordModel = TextModel.FromNameLabel(nameof(Authenticate_POSTModel.Password), "Auth.Password.PH");
                             passwordModel.Type = "password";
-                            var domainModel = TextModel.FromNameLabel(nameof(Authenticate_POSTModel.Domain), T("Auth.Domain.PH"),
-                                value: token?.Domain);
-                            var saveEndpointModel = Checkbox3Model.FromNameLabel(nameof(Authenticate_POSTModel.SaveAuthEndpoint), T("Auth.SaveEndpoint.PH"),
-                                token?.SaveAuthEndPoint ?? true);
-                            var saveNameModel = Checkbox3Model.FromNameLabel(nameof(Authenticate_POSTModel.SaveName), T("Auth.SaveName.PH"),
-                                isChecked: token?.SaveName ?? true);
-                            var saveDomainModel = Checkbox3Model.FromNameLabel(nameof(Authenticate_POSTModel.SaveDomain), T("Auth.SaveDomain.PH"),
-                                isChecked: token?.SaveDomain ?? true);
+                            var domainModel = TextModel.FromNameLabel(nameof(Authenticate_POSTModel.Domain), "Auth.Domain.PH",
+                                value: "");
+                                //value: token?.Domain);
+                            var saveEndpointModel = Checkbox3Model.FromNameLabel(nameof(Authenticate_POSTModel.SaveAuthEndpoint), "Auth.SaveEndpoint.PH",
+                                true);
+                                //token?.SaveAuthEndPoint ?? true);
+                            var saveNameModel = Checkbox3Model.FromNameLabel(nameof(Authenticate_POSTModel.SaveName), "Auth.SaveName.PH",
+                                isChecked: true);
+                                //isChecked: token?.SaveName ?? true);
+                            var saveDomainModel = Checkbox3Model.FromNameLabel(nameof(Authenticate_POSTModel.SaveDomain), "Auth.SaveDomain.PH",
+                                isChecked: true);
+                                //isChecked: token?.SaveDomain ?? true);
                         }
                         @await Html.PartialAsync("/Views/Fields/_Text.cshtml", endpointModel)
                         @await Html.PartialAsync("/Views/Fields/_Checkbox3.cshtml", saveEndpointModel)
@@ -125,7 +131,7 @@
                         @await Html.PartialAsync("/Views/Fields/_Checkbox3.cshtml", saveDomainModel)
                         <br />
                         <br />
-                        <button class="btn btn-success w-100" id="send-auth" onclick="NSC.sendForm(this, { success: function (resp) { NSC.notif('@T_JS("Auth.Success")','success');$('.not-auth').removeClass('.not-auth');NSC.refresh(); }}); return false;">@T("Auth.Authenticate")</button>
+                        <button class="btn btn-success w-100" id="send-auth" onclick="NSC.sendForm(this, { success: function (resp) { NSC.notif('Auth.Success','success');$('.not-auth').removeClass('.not-auth');NSC.refresh(); }}); return false;">Auth.Authenticate</button>
                     </form>
                     <pre id="auth-response"></pre>
                     <style>                        
@@ -133,7 +139,7 @@
                             display:none;
                         }
                     </style>
-                    <a class="btn btn-success btn-goexplore" href="@exploreUrl">@T("Auth.GoExplore")</a>
+                    <a class="btn btn-success btn-goexplore" href="@exploreUrl">Auth.GoExplore</a>
                 </div>
             </div>
         </div>
